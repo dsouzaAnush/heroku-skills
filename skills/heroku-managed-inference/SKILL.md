@@ -1,6 +1,6 @@
 ---
 name: heroku-managed-inference
-description: Use Heroku Managed Inference and Agents with the current Heroku AI workflow. Use when the agent needs to install or inspect the Heroku AI CLI plugin, provision Heroku inference model access, attach model resources, make test inference calls, or review Heroku-managed AI model operations.
+description: Use Heroku Managed Inference and Agents with the current Heroku AI workflow. Use when the agent needs to install or inspect the Heroku AI CLI plugin, provision Heroku inference access on the current standard plan, review the latest Managed Inference model catalog, attach model resources, make test inference calls, or review Heroku-managed AI model operations.
 ---
 
 # Heroku Managed Inference
@@ -29,18 +29,20 @@ Follow the current documented flow:
 
 1. install the AI plugin if needed with `heroku plugins:install @heroku/plugin-ai`
 2. create or identify the target app
-3. provision model access with `heroku addons:create heroku-inference:standard -a <app>`
+3. provision standard-plan access with `heroku addons:create heroku-inference:standard -a <app>`
 4. inspect available models with `heroku ai:models:list`
 5. inspect attached resources with `heroku ai:models:info -a <app>`
 6. make bounded test calls with `heroku ai:models:call <MODEL_RESOURCE> -a <app> --prompt '...'`
 
-Prefer the add-on workflow over deprecated creation and destroy commands.
+Prefer the standard-plan add-on workflow over deprecated model-by-model creation and destroy commands. The current standard plan gives one add-on and one inference key access to the supported model catalog, so switching models should normally be a code change, not a reprovisioning step.
 
 ## Resource handling
 
 - Use aliases intentionally when attaching multiple model resources to one app.
 - Keep region alignment in mind when provisioning resources.
-- Treat image, embedding, and chat model resources as separate operational concerns even when they live on one app.
+- Treat chat, embedding, rerank, and image-capable resources as separate operational concerns even when they live on one app.
+- Review the latest catalog before recommending a model. As of February 19, 2026, Heroku announced Claude 4.6 models, DeepSeek v3.2, Kimi K2.5, MiniMax M2.1, ZAI GLM 4.7, ZAI GLM 4.7 Flash, and Cohere Embed v4 under the standard-plan workflow.
+- Prefer steering users away from deprecated Claude 3.5, Claude 3.7, and Claude 4 variants when Claude 4.5 or 4.6 satisfies the workload.
 
 ## Guardrails
 
