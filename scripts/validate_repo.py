@@ -163,6 +163,18 @@ def validate_adapter(repo_root: Path) -> None:
         raise RuntimeError("Source plugin name must be 'heroku'")
     if source_manifest.get("skills") != "./skills/":
         raise RuntimeError("Source plugin skills path must be './skills/'")
+    interface = source_manifest.get("interface", {})
+    if interface.get("composerIcon") != "./assets/heroku-mark-dark-rgb.svg":
+        raise RuntimeError("Source plugin composerIcon must use the official Heroku mark")
+    if interface.get("logo") != "./assets/heroku-logo-dark-rgb.svg":
+        raise RuntimeError("Source plugin logo must use the official Heroku wordmark")
+    if interface.get("brandColor") != "#D7BFF2":
+        raise RuntimeError("Source plugin brandColor must match the official Heroku brand color")
+
+    for asset_name in ("heroku-mark-dark-rgb.svg", "heroku-logo-dark-rgb.svg"):
+        asset_path = plugin_root / "assets" / asset_name
+        if not asset_path.exists():
+            raise RuntimeError(f"Source plugin missing brand asset {asset_name}")
 
     source_manifest_text = source_manifest_path.read_text()
     if "[TODO:" in source_manifest_text:

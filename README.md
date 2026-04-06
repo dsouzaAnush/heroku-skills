@@ -1,5 +1,7 @@
 # Heroku Skills
 
+![Heroku logo](assets/heroku-logo-dark-rgb.svg)
+
 Portable Heroku-focused skills for AI agents.
 
 This repository is organized as an agent-neutral `skills/` collection first. The core skills avoid platform-specific assumptions so they can be packaged for Codex, Claude, or other agents that understand the Agent Skills pattern. Agent-specific packaging lives under `adapters/`.
@@ -27,7 +29,7 @@ Each skill keeps its `SKILL.md` concise and moves longer command catalogs and sa
 
 This repo vendors the official Heroku logo assets from Heroku's January 2025 logo kit and keeps them in two places:
 
-- repo-level copies under [`assets/brand`](assets/brand)
+- repo-level copies under [`assets`](assets)
 - per-skill copies under each skill's `assets/` directory so client UIs can render icons directly from an individual skill folder
 
 Each skill's [`agents/openai.yaml`](skills/deploy-to-heroku/agents/openai.yaml) now includes:
@@ -35,6 +37,8 @@ Each skill's [`agents/openai.yaml`](skills/deploy-to-heroku/agents/openai.yaml) 
 - `icon_small`
 - `icon_large`
 - `brand_color`
+
+The Codex source plugin manifest at [`adapters/codex/heroku/.codex-plugin/plugin.json`](adapters/codex/heroku/.codex-plugin/plugin.json) also points at the official repo-level wordmark and mark so plugin-aware clients can render Heroku branding directly from the packaged adapter.
 
 Use the assets according to Heroku's official brand guidance:
 

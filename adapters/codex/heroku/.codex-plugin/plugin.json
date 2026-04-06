@@ -41,9 +41,9 @@
       "Review my Heroku Redis and logging workflow",
       "Help me deploy a Slack Bolt app to Heroku safely"
     ],
-    "brandColor": "#430098",
-    "composerIcon": "./assets/heroku-icon.svg",
-    "logo": "./assets/heroku-logo.svg",
+    "brandColor": "#D7BFF2",
+    "composerIcon": "./assets/heroku-mark-dark-rgb.svg",
+    "logo": "./assets/heroku-logo-dark-rgb.svg",
     "screenshots": []
   }
 }
