@@ -1,0 +1,340 @@
+{
+  "thresholds": {
+    "global_min_top1": 0.9,
+    "global_min_top3": 1.0,
+    "global_min_contrast": 0.95,
+    "per_skill_min_top1": 0.75
+  },
+  "skills": {
+    "deploy-to-heroku": {
+      "prompts": [
+        "Deploy this app to Heroku from git and check whether I need a Procfile or buildpack changes.",
+        "Set up the Heroku git remote and push my main branch safely.",
+        "Figure out whether this repo should use Heroku git deploys or a container workflow.",
+        "Review this codebase for Heroku deployment readiness before we create or target an app."
+      ],
+      "must_include": [
+        "git:remote",
+        "git push heroku",
+        "Procfile",
+        "container:push"
+      ],
+      "contrast_prompts": [
+        {
+          "prompt": "Should this app deploy to Heroku with buildpacks or as a container image?",
+          "must_beat": [
+            "heroku-app-ops",
+            "heroku-slack-agents"
+          ]
+        }
+      ]
+    },
+    "heroku-app-ops": {
+      "prompts": [
+        "Inspect my Heroku app health, dynos, releases, and logs before we change anything.",
+        "Help me restart dynos, review releases, and rollback safely on Heroku.",
+        "Show me app info and current process state for this Heroku app.",
+        "Walk me through a Heroku outage triage using app info, releases, maintenance mode, and logs."
+      ],
+      "must_include": [
+        "apps:info",
+        "ps",
+        "releases",
+        "maintenance"
+      ],
+      "contrast_prompts": [
+        {
+          "prompt": "Investigate a bad Heroku release and decide whether we should restart dynos or roll back.",
+          "must_beat": [
+            "deploy-to-heroku",
+            "heroku-logging-drains"
+          ]
+        }
+      ]
+    },
+    "heroku-config-vars": {
+      "prompts": [
+        "Audit the Heroku config vars for this app and update one safely.",
+        "Help me compare .env values with Heroku config and use config:set correctly.",
+        "I need to inspect a config var and decide whether unsetting it will trigger a release.",
+        "Review runtime versus build-time configuration on Heroku before we change any secrets."
+      ],
+      "must_include": [
+        "config:get",
+        "config:set",
+        "config:unset",
+        ".env"
+      ],
+      "contrast_prompts": [
+        {
+          "prompt": "Compare local env files with Heroku configuration and plan a safe config update.",
+          "must_beat": [
+            "deploy-to-heroku",
+            "heroku-app-ops"
+          ]
+        }
+      ]
+    },
+    "heroku-key-value-store": {
+      "prompts": [
+        "Inspect my Heroku Redis credentials, connection info, and promotion options.",
+        "Review the Key-Value Store timeout and maxmemory settings before changing them.",
+        "Help me understand whether this app should use REDIS_URL and how to inspect redis:info.",
+        "Check Heroku Key-Value Store operational settings and explain any risky redis changes."
+      ],
+      "must_include": [
+        "redis:info",
+        "redis:credentials",
+        "REDIS_URL",
+        "redis:maxmemory"
+      ],
+      "contrast_prompts": [
+        {
+          "prompt": "Review Heroku Redis credentials and maxmemory policy before we promote a store.",
+          "must_beat": [
+            "heroku-postgres",
+            "heroku-addons"
+          ]
+        }
+      ]
+    },
+    "heroku-domains-tls": {
+      "prompts": [
+        "Set up a custom domain on Heroku with ACM and make sure the apex DNS is correct.",
+        "Inspect certificate status and domain cutover steps for this Heroku app.",
+        "Help me attach a manual certificate only if ACM will not work.",
+        "Review DNS validation and TLS activation for a Heroku hostname before cutover."
+      ],
+      "must_include": [
+        "domains:add",
+        "certs:auto:enable",
+        "apex",
+        "certs:update"
+      ],
+      "contrast_prompts": [
+        {
+          "prompt": "Help me attach a manual certificate only if ACM will not work.",
+          "must_beat": [
+            "heroku-connect",
+            "deploy-to-heroku"
+          ]
+        }
+      ]
+    },
+    "heroku-logging-drains": {
+      "prompts": [
+        "Inspect Heroku logs and tell me whether we should use a classic drain or telemetry.",
+        "Review the current log drain configuration for this app before adding a new endpoint.",
+        "Help me distinguish Fir logging from Common Runtime logging on Heroku.",
+        "Plan a safe Heroku log forwarding change without leaking secrets to a drain target."
+      ],
+      "must_include": [
+        "drains:add",
+        "telemetry:add",
+        "apps:info",
+        "Fir"
+      ],
+      "contrast_prompts": [
+        {
+          "prompt": "Decide whether this Heroku app should use classic drains or telemetry drains.",
+          "must_beat": [
+            "heroku-app-ops",
+            "heroku-addons"
+          ]
+        }
+      ]
+    },
+    "heroku-addons": {
+      "prompts": [
+        "Create and attach a Heroku add-on safely, and explain the config var side effects.",
+        "Review add-on plans and attachment aliases before upgrading or destroying anything.",
+        "Help me detach an add-on from one app without deleting the underlying resource.",
+        "Inspect add-on lifecycle options and explain the difference between detaching and destroying."
+      ],
+      "must_include": [
+        "addons:create",
+        "addons:attach",
+        "addons:destroy",
+        "addons:detach"
+      ],
+      "contrast_prompts": [
+        {
+          "prompt": "Review add-on plans and attachment aliases before upgrading or destroying anything.",
+          "must_beat": [
+            "heroku-pipelines-review-apps",
+            "heroku-connect"
+          ]
+        },
+        {
+          "prompt": "Help me detach an add-on from one app without deleting the underlying resource.",
+          "must_beat": [
+            "heroku-connect",
+            "deploy-to-heroku"
+          ]
+        }
+      ]
+    },
+    "heroku-managed-inference": {
+      "prompts": [
+        "Set up Heroku Managed Inference and make a small test model call safely.",
+        "Inspect whether the Heroku AI CLI plugin is installed and whether model access is provisioned.",
+        "Help me attach a managed inference model resource to this Heroku app.",
+        "Review the Heroku AI plugin and model resource setup before we make a test inference call."
+      ],
+      "must_include": [
+        "ai:models:call",
+        "model",
+        "inference",
+        "@heroku/plugin-ai"
+      ],
+      "contrast_prompts": [
+        {
+          "prompt": "Check whether the Heroku AI plugin is installed and make a safe model call.",
+          "must_beat": [
+            "heroku-app-ops",
+            "heroku-slack-agents"
+          ]
+        }
+      ]
+    },
+    "heroku-applink-connections": {
+      "prompts": [
+        "Inspect Heroku AppLink connection setup between this app and Salesforce.",
+        "Help me review AppLink connection prerequisites and connection state safely.",
+        "I need to troubleshoot a Salesforce AppLink connection on Heroku.",
+        "Review AppLink connection setup before we expose any Salesforce-linked data."
+      ],
+      "must_include": [
+        "AppLink",
+        "connection",
+        "Salesforce",
+        "plugin-applink"
+      ],
+      "contrast_prompts": [
+        {
+          "prompt": "Troubleshoot a Heroku AppLink connection to Salesforce.",
+          "must_beat": [
+            "heroku-applink-publications",
+            "heroku-connect"
+          ]
+        }
+      ]
+    },
+    "heroku-applink-publications": {
+      "prompts": [
+        "Help me review Heroku AppLink publications and what data is exposed to Salesforce.",
+        "Inspect AppLink publication state before changing any shared objects or endpoints.",
+        "I need guidance for AppLink publication workflows on Heroku.",
+        "Review which AppLink publication endpoints or objects are exposed before we change them."
+      ],
+      "must_include": [
+        "publication",
+        "AppLink",
+        "Salesforce",
+        "shared"
+      ],
+      "contrast_prompts": [
+        {
+          "prompt": "Inspect which AppLink publications are exposed to Salesforce and whether we should change them.",
+          "must_beat": [
+            "heroku-applink-connections",
+            "heroku-connect"
+          ]
+        }
+      ]
+    },
+    "heroku-connect": {
+      "prompts": [
+        "Set up Heroku Connect properly, including database and Salesforce authentication.",
+        "Inspect my Heroku Connect mapping and diagnose why sync is not healthy.",
+        "Help me use connect:db:set and connect:sf:auth before normal Heroku Connect operations.",
+        "Review Heroku Connect sync health, mappings, and setup steps before changing production sync."
+      ],
+      "must_include": [
+        "connect:db:set",
+        "connect:sf:auth",
+        "connect:info",
+        "mapping"
+      ],
+      "contrast_prompts": [
+        {
+          "prompt": "Review Heroku Connect mappings and authenticate Salesforce before sync starts.",
+          "must_beat": [
+            "heroku-applink-connections",
+            "heroku-postgres"
+          ]
+        }
+      ]
+    },
+    "heroku-postgres": {
+      "prompts": [
+        "Inspect my Heroku Postgres setup, backups, and follower safety before making changes.",
+        "Help me review pg:info, credentials, and backup options for this app.",
+        "I need to promote or pull from Heroku Postgres, but only after a safe read-only pass.",
+        "Review Heroku Postgres backup posture and direct SQL inspection options before we change anything."
+      ],
+      "must_include": [
+        "pg:info",
+        "pg:psql",
+        "backup",
+        "pg:promote"
+      ],
+      "contrast_prompts": [
+        {
+          "prompt": "Inspect Heroku Postgres backups, credentials, and whether a follower can be promoted safely.",
+          "must_beat": [
+            "heroku-key-value-store",
+            "heroku-addons"
+          ]
+        }
+      ]
+    },
+    "heroku-pipelines-review-apps": {
+      "prompts": [
+        "Inspect the Heroku pipeline and review apps before enabling anything.",
+        "Help me use pipelines:diff and reviewapps:enable safely for this app.",
+        "Review the promotion flow between staging and production in this Heroku pipeline.",
+        "Check pipeline stage flow and review app behavior before we promote a Heroku release."
+      ],
+      "must_include": [
+        "pipelines:diff",
+        "reviewapps:enable",
+        "pipelines:promote",
+        "pipeline"
+      ],
+      "contrast_prompts": [
+        {
+          "prompt": "Review Heroku pipeline stages and whether review apps should be enabled before promotion.",
+          "must_beat": [
+            "deploy-to-heroku",
+            "heroku-addons"
+          ]
+        }
+      ]
+    },
+    "heroku-slack-agents": {
+      "prompts": [
+        "Deploy this Slack Bolt for JavaScript app to Heroku and wire the correct /slack/events Request URLs.",
+        "Figure out whether this Slack bot should run on Heroku with a web dyno or a worker dyno using Socket Mode.",
+        "Inspect the Procfile, env vars, and Slack manifest requirements for a Heroku-hosted Slack agent.",
+        "Review a Slack Bolt TypeScript app and decide whether Heroku should run it as HTTP or Socket Mode."
+      ],
+      "must_include": [
+        "Procfile",
+        "SLACK_SIGNING_SECRET",
+        "SLACK_APP_TOKEN",
+        "/slack/events",
+        "@slack/bolt"
+      ],
+      "contrast_prompts": [
+        {
+          "prompt": "Review a Slack Bolt app on Heroku and decide whether it should run as a web dyno or worker dyno.",
+          "must_beat": [
+            "deploy-to-heroku",
+            "heroku-app-ops"
+          ]
+        }
+      ]
+    }
+  }
+}

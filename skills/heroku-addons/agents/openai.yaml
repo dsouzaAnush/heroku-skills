@@ -1,0 +1,7 @@
+interface:
+  display_name: "Heroku Add-ons"
+  short_description: "Manage Heroku add-on lifecycle safely"
+  icon_small: "./assets/heroku-mark-dark-rgb.svg"
+  icon_large: "./assets/heroku-logo-dark-rgb.svg"
+  brand_color: "#D7BFF2"
+  default_prompt: "Use $heroku-addons to inspect add-on resources, attachment aliases, detach-versus-destroy choices, plans, and approved Heroku add-on lifecycle changes safely."

@@ -1,0 +1,7 @@
+interface:
+  display_name: "Heroku Domains and TLS"
+  short_description: "Set up Heroku domains and TLS safely"
+  icon_small: "./assets/heroku-mark-dark-rgb.svg"
+  icon_large: "./assets/heroku-logo-dark-rgb.svg"
+  brand_color: "#D7BFF2"
+  default_prompt: "Use $heroku-domains-tls to inspect DNS, ACM, apex-domain handling, and approved Heroku manual certificate changes safely."

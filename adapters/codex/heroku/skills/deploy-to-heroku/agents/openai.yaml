@@ -1,0 +1,7 @@
+interface:
+  display_name: "Deploy to Heroku"
+  short_description: "Assess and deploy apps safely to Heroku"
+  icon_small: "./assets/heroku-mark-dark-rgb.svg"
+  icon_large: "./assets/heroku-logo-dark-rgb.svg"
+  brand_color: "#D7BFF2"
+  default_prompt: "Use $deploy-to-heroku to inspect a repo, choose the right Heroku deploy path, and carry out a safe deployment."

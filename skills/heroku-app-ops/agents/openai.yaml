@@ -1,0 +1,7 @@
+interface:
+  display_name: "Heroku App Ops"
+  short_description: "Inspect and operate Heroku apps safely"
+  icon_small: "./assets/heroku-mark-dark-rgb.svg"
+  icon_large: "./assets/heroku-logo-dark-rgb.svg"
+  brand_color: "#D7BFF2"
+  default_prompt: "Use $heroku-app-ops to inspect app info, current process state, dynos, releases, logs, and safe app operations before changing anything."

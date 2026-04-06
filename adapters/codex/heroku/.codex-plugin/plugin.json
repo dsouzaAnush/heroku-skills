@@ -1,0 +1,49 @@
+{
+  "name": "heroku",
+  "version": "0.2.0",
+  "description": "Portable Heroku skills packaged as a Codex source plugin.",
+  "author": {
+    "name": "OpenAI Codex",
+    "url": "https://openai.com/"
+  },
+  "homepage": "https://github.com/dsouzaAnush/heroku-skills",
+  "repository": "https://github.com/dsouzaAnush/heroku-skills",
+  "license": "MIT",
+  "keywords": [
+    "heroku",
+    "skills",
+    "agent-skills",
+    "deployment",
+    "redis",
+    "logging",
+    "tls",
+    "slack",
+    "salesforce",
+    "ai"
+  ],
+  "skills": "./skills/",
+  "interface": {
+    "displayName": "Heroku",
+    "shortDescription": "Heroku runtime, data, and platform guidance",
+    "longDescription": "Portable Heroku skills packaged for Codex. Includes deployment, app operations, config vars, Key-Value Store, domains and TLS, logging and drains, add-ons, Postgres, pipelines, Managed Inference, AppLink, Heroku Connect, and Slack agent deployment workflows while keeping the source repo agent-neutral.",
+    "developerName": "OpenAI Codex",
+    "category": "Coding",
+    "capabilities": [
+      "Interactive",
+      "Write"
+    ],
+    "websiteURL": "https://devcenter.heroku.com/",
+    "privacyPolicyURL": "https://www.heroku.com/policy/privacy",
+    "termsOfServiceURL": "https://www.heroku.com/policy/terms-of-service",
+    "defaultPrompt": [
+      "Inspect this repo for Heroku deployment readiness",
+      "Help me set up Heroku domains and TLS safely",
+      "Review my Heroku Redis and logging workflow",
+      "Help me deploy a Slack Bolt app to Heroku safely"
+    ],
+    "brandColor": "#430098",
+    "composerIcon": "./assets/heroku-icon.svg",
+    "logo": "./assets/heroku-logo.svg",
+    "screenshots": []
+  }
+}
