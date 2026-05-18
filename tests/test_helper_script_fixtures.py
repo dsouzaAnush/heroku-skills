@@ -53,6 +53,14 @@ elif argv[:1] == ["redis:credentials"]:
     print("REDIS_URL=rediss://example")
 elif argv[:1] == ["redis:wait"]:
     print("available")
+elif argv == ["plugins", "--json"]:
+    print(json.dumps([
+        {"name": "@heroku-cli/heroku-connect-plugin", "pluginName": "@heroku-cli/heroku-connect-plugin"},
+        {"name": "@heroku/plugin-ai", "pluginName": "@heroku/plugin-ai"},
+        {"name": "@heroku-cli/plugin-applink", "pluginName": "@heroku-cli/plugin-applink"}
+    ]))
+elif argv[:1] == ["help"]:
+    print("help for " + " ".join(argv[1:]))
 else:
     print("fake heroku command", " ".join(argv))
 """
@@ -170,6 +178,34 @@ def test_postgres_snapshot_collects_expected_commands(tmp_path: Path) -> None:
     assert ["pg:info", "-a", "demo-app"] in commands
     assert ["pg:backups", "-a", "demo-app"] in commands
     assert ["pg:credentials", "-a", "demo-app"] in commands
+
+
+def test_plugin_status_helpers_summarize_plugins_without_raw_manifest(tmp_path: Path) -> None:
+    fake = make_fake_heroku(tmp_path)
+
+    cases = (
+        (
+            "skills/heroku-connect/scripts/plugin_status.py",
+            "connect_info_help",
+            "@heroku-cli/heroku-connect-plugin",
+        ),
+        (
+            "skills/heroku-managed-inference/scripts/plugin_status.py",
+            "ai_models_help",
+            "@heroku/plugin-ai",
+        ),
+        (
+            "skills/heroku-applink-connections/scripts/plugin_status.py",
+            "salesforce_connect_help",
+            "@heroku-cli/plugin-applink",
+        ),
+    )
+
+    for script_path, help_key, expected_plugin in cases:
+        payload = run_script(script_path, tmp_path, fake["env"])
+        assert payload[help_key]["returncode"] == 0
+        assert payload["plugins"]["detected"][expected_plugin] is True
+        assert "stdout" not in payload["plugins"]
 
 
 def test_logging_snapshot_collects_runtime_selection_and_drain_commands(tmp_path: Path) -> None:

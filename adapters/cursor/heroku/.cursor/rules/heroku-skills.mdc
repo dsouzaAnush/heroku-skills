@@ -1,0 +1,32 @@
+---
+description: Heroku platform workflows for deployment, app operations, config vars, Postgres, Key-Value Store, domains/TLS, logging, add-ons, pipelines, Managed Inference, AppLink, Heroku Connect, and Slack agents.
+globs:
+alwaysApply: false
+---
+
+# Heroku Skills
+
+Use this rule when a Cursor task involves Heroku apps, deployments, runtime operations, data services, networking, Salesforce integrations, Managed Inference, or Slack agents on Heroku.
+
+Start read-only. Prefer `heroku apps:info`, `heroku releases:info`, bounded logs, and service inspection before changing apps, add-ons, config vars, domains, drains, credentials, or data.
+
+Ask before production-changing actions: app creation, deploys, rollbacks, add-on provisioning or destruction, database restores, credential rotation, DNS/TLS cutovers, buildpack or stack changes, pipeline promotions, and Slack app token changes.
+
+Use the bundled skill source in `skills/<skill-name>/SKILL.md` as the detailed workflow reference:
+
+- `deploy-to-heroku`: deployment readiness, Heroku Git, container deploys, app creation, and remotes.
+- `heroku-app-ops`: dynos, releases, maintenance, logs, rollbacks, and incident inspection.
+- `heroku-config-vars`: config inspection, diffing, setting, unsetting, and secret-safe handling.
+- `heroku-postgres`: Postgres inspection, backups, credentials, promote, restore, and data movement.
+- `heroku-key-value-store`: Heroku Key-Value Store and Redis-compatible workflows.
+- `heroku-domains-tls`: custom domains, DNS, ACM, certs, and TLS cutovers.
+- `heroku-logging-drains`: bounded logs, drains, observability handoff, and log forwarding.
+- `heroku-addons`: add-on lifecycle, attachments, upgrades, plans, and destructive-operation guardrails.
+- `heroku-pipelines-review-apps`: pipelines, stages, review apps, promotion, and app.json.
+- `heroku-managed-inference`: Heroku Managed Inference and Agents workflows.
+- `heroku-applink-connections`: AppLink org connections and Salesforce/Data Cloud auth.
+- `heroku-applink-publications`: publishing Heroku apps into Salesforce and Agentforce.
+- `heroku-connect`: Heroku Connect sync, mappings, Postgres/Salesforce inspection, and plugin checks.
+- `heroku-slack-agents`: Slack Bolt JS/TS agents deployed on Heroku.
+
+Load only the relevant skill and its directly linked `references/` files. Run bundled helper scripts from that skill's `scripts/` directory when a deterministic read-only snapshot is useful.

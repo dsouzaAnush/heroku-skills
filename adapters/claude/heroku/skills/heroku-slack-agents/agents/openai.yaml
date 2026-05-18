@@ -1,0 +1,7 @@
+interface:
+  display_name: "Heroku Slack Agents"
+  short_description: "Deploy Bolt JS or TS apps on Heroku"
+  icon_small: "./assets/heroku-mark-dark-rgb.svg"
+  icon_large: "./assets/heroku-logo-dark-rgb.svg"
+  brand_color: "#D7BFF2"
+  default_prompt: "Use $heroku-slack-agents to inspect a Slack Bolt JS or TS app, choose HTTP or Socket Mode, and apply safe Heroku deployment steps."

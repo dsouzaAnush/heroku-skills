@@ -1,0 +1,7 @@
+interface:
+  display_name: "Heroku AppLink Publications"
+  short_description: "Publish Heroku apps into Salesforce safely"
+  icon_small: "./assets/heroku-mark-dark-rgb.svg"
+  icon_large: "./assets/heroku-logo-dark-rgb.svg"
+  brand_color: "#D7BFF2"
+  default_prompt: "Use $heroku-applink-publications to review AppLink publication workflows, OpenAPI specs, shared publication endpoints, and safe publication flows into Salesforce."

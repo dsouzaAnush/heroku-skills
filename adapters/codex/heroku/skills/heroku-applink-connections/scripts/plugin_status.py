@@ -18,9 +18,52 @@ def run(cmd: list[str]) -> dict:
     }
 
 
+def summarize_plugins(result: dict, expected_plugins: list[str]) -> dict:
+    summary = {
+        "command": result["command"],
+        "returncode": result["returncode"],
+        "stderr": result["stderr"],
+        "detected": {plugin: False for plugin in expected_plugins},
+    }
+    if result["returncode"] != 0:
+        summary["stdout_preview"] = result["stdout"][:500]
+        return summary
+
+    try:
+        plugins = json.loads(result["stdout"] or "[]")
+    except json.JSONDecodeError:
+        summary["stdout_preview"] = result["stdout"][:500]
+        return summary
+
+    names = {
+        str(value)
+        for plugin in plugins
+        for value in (
+            plugin.get("name"),
+            plugin.get("pluginName"),
+            plugin.get("alias"),
+            plugin.get("pjson", {}).get("name") if isinstance(plugin.get("pjson"), dict) else None,
+        )
+        if value
+    }
+    summary["detected"] = {
+        plugin: plugin in names
+        for plugin in expected_plugins
+    }
+    summary["installed_plugin_count"] = len(names)
+    return summary
+
+
 def main() -> None:
     heroku_path = shutil.which("heroku")
-    plugins = run(["heroku", "plugins", "--json"]) if heroku_path else None
+    plugins = (
+        summarize_plugins(
+            run(["heroku", "plugins", "--json"]),
+            ["@heroku-cli/plugin-applink"],
+        )
+        if heroku_path
+        else None
+    )
     salesforce_help = run(["heroku", "help", "salesforce:connect"]) if heroku_path else None
     payload = {
         "heroku_cli_installed": bool(heroku_path),
