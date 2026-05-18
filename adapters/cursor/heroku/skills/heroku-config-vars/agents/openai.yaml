@@ -1,0 +1,7 @@
+interface:
+  display_name: "Heroku Config Vars"
+  short_description: "Inspect and manage Heroku config vars safely"
+  icon_small: "./assets/heroku-mark-dark-rgb.svg"
+  icon_large: "./assets/heroku-logo-dark-rgb.svg"
+  brand_color: "#D7BFF2"
+  default_prompt: "Use $heroku-config-vars to inspect config:get results, compare environments, and plan safe config:set or config:unset changes that may trigger a release."

@@ -1,10 +1,16 @@
-# Heroku Skills
+<p align="center">
+  <img src="assets/heroku-logo-dark-rgb.svg" alt="Heroku" height="44" />
+  <span>&nbsp;&nbsp;&nbsp;</span>
+  <img src="assets/claude-ai-logo.svg" alt="Claude" height="44" />
+</p>
 
-![Heroku logo](assets/heroku-logo-dark-rgb.svg)
+# Heroku Skills
 
 Portable Heroku-focused skills for AI agents.
 
-This repository is organized as an agent-neutral `skills/` collection first. The core skills avoid platform-specific assumptions so they can be packaged for Codex, Claude, or other agents that understand the Agent Skills pattern. Agent-specific packaging lives under `adapters/`.
+This repository is organized as an agent-neutral `skills/` collection first. The core skills avoid platform-specific assumptions so they can be packaged for Codex, Claude, Cursor, or other agents that understand reusable rules and skill-style workflows. Agent-specific packaging lives under `adapters/`.
+
+Pair these skills with [Heroku Code MCP](https://github.com/dsouzaAnush/heroku-code-mcp) when Claude needs a live Heroku API tool surface in addition to workflow guidance.
 
 ## Included skills
 
@@ -27,7 +33,7 @@ Each skill keeps its `SKILL.md` concise and moves longer command catalogs and sa
 
 ## Brand assets
 
-This repo vendors the official Heroku logo assets from Heroku's January 2025 logo kit and keeps them in two places:
+This repo vendors the official Heroku logo assets from Heroku's January 2025 logo kit, plus the Claude logo used in the Claude-facing docs, and keeps them in two places:
 
 - repo-level copies under [`assets`](assets)
 - per-skill copies under each skill's `assets/` directory so client UIs can render icons directly from an individual skill folder
@@ -47,16 +53,109 @@ Use the assets according to Heroku's official brand guidance:
 ## Repository layout
 
 ```text
-skills/            Portable skills
-adapters/codex/    Codex packaging inputs
-scripts/           Repo-level build and validation scripts
-tests/             Unit and structure tests
-evals/             Prompt-routing and coverage evals
-assets/            Shared adapter assets
-dist/              Generated adapter bundles
+skills/             Portable skills
+adapters/codex/     Codex packaging inputs
+adapters/claude/    Claude Code plugin inputs
+adapters/cursor/    Cursor Project Rules inputs
+scripts/            Repo-level build and validation scripts
+tests/              Unit and structure tests
+evals/              Prompt-routing and coverage evals
+assets/             Shared adapter assets
+dist/               Generated adapter bundles
 ```
 
 The canonical Codex source plugin lives at `adapters/codex/heroku/.codex-plugin/plugin.json`. It is self-contained and includes a plugin-local `skills/` mirror so it can be packaged or installed on its own. The build step refreshes that mirror from the portable root `skills/` tree and writes the distributable bundle under `dist/codex/heroku/`.
+
+The canonical Claude source plugin lives at `adapters/claude/heroku/.claude-plugin/plugin.json`. It includes the same plugin-local `skills/` mirror plus `.mcp.json` wiring for a local `heroku-code-mcp` HTTP server at `http://127.0.0.1:3333/mcp`.
+
+The canonical Cursor source bundle lives at `adapters/cursor/heroku/.cursor/rules/heroku-skills.mdc`. It includes an agent-requested Cursor Project Rule plus the same plugin-local `skills/` mirror so Cursor can load the rule and then consult the detailed Heroku skill references on demand.
+
+## Claude integration
+
+The Claude integration has three layers:
+
+| Layer | Repository | What Claude gets |
+| --- | --- | --- |
+| Heroku Code MCP | [`heroku-code-mcp`](https://github.com/dsouzaAnush/heroku-code-mcp) | Three live tools: `auth_status`, `search`, and `execute` |
+| Heroku Skills | this repo | Safe Heroku workflows for deploys, app ops, config vars, Postgres, domains, add-ons, AppLink, Connect, Slack agents, and Managed Inference |
+| Claude plugin | `dist/claude/heroku` | Claude Code plugin packaging that exposes the skills and wires the MCP server through `.mcp.json` |
+
+Claude Code MCP setup follows Anthropic's [Claude Code MCP documentation](https://docs.anthropic.com/en/docs/claude-code/mcp).
+
+### Claude Code
+
+Build and validate the plugin:
+
+```bash
+python3 scripts/build_claude_adapter.py
+claude plugin validate dist/claude/heroku
+```
+
+Start the companion MCP server in the `heroku-code-mcp` repo:
+
+```bash
+heroku auth:whoami
+npm run seed:token
+TOKEN_STORE_PATH=./data/tokens.integration.json \
+TOKEN_ENCRYPTION_KEY_BASE64='<seed-output-key>' \
+PORT=3333 HOST=127.0.0.1 npm run dev
+```
+
+Load the plugin for a Claude Code session:
+
+```bash
+claude --plugin-dir "$(pwd)/dist/claude/heroku"
+```
+
+Claude Code should show:
+
+- plugin `heroku`
+- namespaced skills such as `heroku:deploy-to-heroku` and `heroku:heroku-app-ops`
+- MCP server `plugin:heroku:heroku-code-mcp`
+- MCP tools `auth_status`, `search`, and `execute`
+
+### Claude Desktop
+
+Claude Desktop can use the MCP server directly for live Heroku API access. Add this to `~/Library/Application Support/Claude/claude_desktop_config.json` when HTTP MCP is supported:
+
+```json
+{
+  "mcpServers": {
+    "heroku-code-mcp": {
+      "type": "http",
+      "url": "http://127.0.0.1:3333/mcp",
+      "headers": {
+        "x-user-id": "default"
+      }
+    }
+  }
+}
+```
+
+If your Claude Desktop build expects stdio servers, bridge to the local HTTP endpoint:
+
+```json
+{
+  "mcpServers": {
+    "heroku-code-mcp": {
+      "command": "npx",
+      "args": ["-y", "mcp-remote", "http://127.0.0.1:3333/mcp", "--allow-http", "--header", "x-user-id:default"]
+    }
+  }
+}
+```
+
+Restart Claude Desktop after changing the config. The classic Desktop chat surface uses MCP tools; the skills and plugin packaging are for Claude Code-style coding sessions.
+
+### Claude cowork / remote code sessions
+
+Use the Claude Code plugin path for cowork when the cowork runtime can load local plugins:
+
+```bash
+claude --plugin-dir /path/to/heroku-skills/dist/claude/heroku
+```
+
+For remote cowork sessions, run `heroku-code-mcp` where the cowork runtime can reach it, then update `adapters/claude/heroku/.mcp.json` or the generated `dist/claude/heroku/.mcp.json` to point at that endpoint. Keep token stores and seeded Heroku credentials private to the runtime; do not expose the local development token store on a public network.
 
 ## Validation
 
@@ -67,7 +166,7 @@ python3 -m pip install -r requirements-dev.txt
 python3 scripts/validate_repo.py
 ```
 
-This validates each skill with the local `quick_validate.py` helper, executes bundled helper scripts in safe default mode, verifies that the Codex source plugin mirrors the portable root skills, and builds the Codex adapter into `dist/codex/heroku`.
+This validates each skill with the local `quick_validate.py` helper, executes bundled helper scripts in safe default mode, verifies that the Codex, Claude, and Cursor source adapters mirror the portable root skills, and builds the generated adapters into `dist/codex/heroku`, `dist/claude/heroku`, and `dist/cursor/heroku`.
 
 ## Tests
 
@@ -120,6 +219,45 @@ The generated bundle is written to:
 ```text
 dist/codex/heroku
 ```
+
+## Build the Claude adapter
+
+Create a self-contained Claude Code plugin bundle:
+
+```bash
+python3 scripts/build_claude_adapter.py
+```
+
+The generated bundle is written to:
+
+```text
+dist/claude/heroku
+```
+
+Validate it with Claude Code:
+
+```bash
+claude plugin validate dist/claude/heroku
+```
+
+The plugin exposes the Heroku skills and an optional MCP server entry named `heroku-code-mcp`.
+Start `heroku-code-mcp` separately before using those MCP tools.
+
+## Build the Cursor adapter
+
+Create a self-contained Cursor Project Rules bundle:
+
+```bash
+python3 scripts/build_cursor_adapter.py
+```
+
+The generated bundle is written to:
+
+```text
+dist/cursor/heroku
+```
+
+To use it in Cursor, copy or symlink `dist/cursor/heroku/.cursor/rules/heroku-skills.mdc` into the target project. Keep the generated `skills/` directory available beside it when you want Cursor to consult the detailed Heroku workflows.
 
 ## Sources and conventions
 

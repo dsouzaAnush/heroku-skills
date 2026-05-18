@@ -1,0 +1,7 @@
+interface:
+  display_name: "Heroku Logging and Drains"
+  short_description: "Inspect logs and manage Heroku drains safely"
+  icon_small: "./assets/heroku-mark-dark-rgb.svg"
+  icon_large: "./assets/heroku-logo-dark-rgb.svg"
+  brand_color: "#D7BFF2"
+  default_prompt: "Use $heroku-logging-drains to review recent logs, compare classic drains with telemetry drains, and make approved log forwarding changes safely."

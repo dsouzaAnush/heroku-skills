@@ -1,0 +1,7 @@
+interface:
+  display_name: "Heroku Key-Value Store"
+  short_description: "Operate Heroku Key-Value Store safely"
+  icon_small: "./assets/heroku-mark-dark-rgb.svg"
+  icon_large: "./assets/heroku-logo-dark-rgb.svg"
+  brand_color: "#D7BFF2"
+  default_prompt: "Use $heroku-key-value-store to inspect redis:info, REDIS_URL, credentials, and approved Heroku Key-Value Store operations safely."

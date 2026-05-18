@@ -1,0 +1,7 @@
+interface:
+  display_name: "Heroku Managed Inference"
+  short_description: "Operate Heroku Managed Inference safely"
+  icon_small: "./assets/heroku-mark-dark-rgb.svg"
+  icon_large: "./assets/heroku-logo-dark-rgb.svg"
+  brand_color: "#D7BFF2"
+  default_prompt: "Use $heroku-managed-inference to inspect plugin status, provision model access, and test Heroku Managed Inference safely."

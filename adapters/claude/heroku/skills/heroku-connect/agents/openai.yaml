@@ -1,0 +1,7 @@
+interface:
+  display_name: "Heroku Connect"
+  short_description: "Operate Heroku Connect with safe sync guardrails"
+  icon_small: "./assets/heroku-mark-dark-rgb.svg"
+  icon_large: "./assets/heroku-logo-dark-rgb.svg"
+  brand_color: "#D7BFF2"
+  default_prompt: "Use $heroku-connect to set the Heroku Postgres database, authenticate Salesforce, inspect mappings, and manage approved sync operations safely."

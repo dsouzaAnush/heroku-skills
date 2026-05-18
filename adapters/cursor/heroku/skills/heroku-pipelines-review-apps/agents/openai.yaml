@@ -1,0 +1,7 @@
+interface:
+  display_name: "Heroku Pipelines and Review Apps"
+  short_description: "Manage Heroku pipelines and review apps safely"
+  icon_small: "./assets/heroku-mark-dark-rgb.svg"
+  icon_large: "./assets/heroku-logo-dark-rgb.svg"
+  brand_color: "#D7BFF2"
+  default_prompt: "Use $heroku-pipelines-review-apps to inspect stages, review app setup, and safe promotion workflows on Heroku."

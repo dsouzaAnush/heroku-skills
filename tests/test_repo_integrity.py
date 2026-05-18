@@ -45,3 +45,31 @@ def test_build_adapter_creates_self_contained_bundle(tmp_path: Path) -> None:
     manifest = json.loads((output_dir / ".codex-plugin" / "plugin.json").read_text())
     assert manifest["skills"] == "./skills/"
     assert (output_dir / "skills" / "heroku-slack-agents" / "SKILL.md").exists()
+
+
+def test_build_claude_adapter_creates_self_contained_bundle(tmp_path: Path) -> None:
+    output_dir = tmp_path / "claude-bundle"
+    subprocess.run(
+        [sys.executable, "scripts/build_claude_adapter.py", "--output", str(output_dir)],
+        cwd=REPO_ROOT,
+        check=True,
+    )
+    manifest = json.loads((output_dir / ".claude-plugin" / "plugin.json").read_text())
+    assert manifest["skills"] == "./skills/"
+    assert manifest["mcpServers"] == "./.mcp.json"
+    assert (output_dir / ".mcp.json").exists()
+    assert (output_dir / "skills" / "heroku-slack-agents" / "SKILL.md").exists()
+
+
+def test_build_cursor_adapter_creates_self_contained_bundle(tmp_path: Path) -> None:
+    output_dir = tmp_path / "cursor-bundle"
+    subprocess.run(
+        [sys.executable, "scripts/build_cursor_adapter.py", "--output", str(output_dir)],
+        cwd=REPO_ROOT,
+        check=True,
+    )
+    rule_path = output_dir / ".cursor" / "rules" / "heroku-skills.mdc"
+    rule_text = rule_path.read_text()
+    assert "description:" in rule_text.split("---", 2)[1]
+    assert "alwaysApply: false" in rule_text.split("---", 2)[1]
+    assert (output_dir / "skills" / "heroku-slack-agents" / "SKILL.md").exists()

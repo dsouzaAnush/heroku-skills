@@ -1,0 +1,7 @@
+interface:
+  display_name: "Heroku Postgres"
+  short_description: "Operate Heroku Postgres with safe guardrails"
+  icon_small: "./assets/heroku-mark-dark-rgb.svg"
+  icon_large: "./assets/heroku-logo-dark-rgb.svg"
+  brand_color: "#D7BFF2"
+  default_prompt: "Use $heroku-postgres to inspect pg:info, pg:backups, pg:credentials, and approved Heroku Postgres operations safely."
