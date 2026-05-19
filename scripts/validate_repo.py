@@ -136,6 +136,7 @@ def validate_skills(repo_root: Path) -> None:
 def resolve_quick_validator() -> Path:
     candidates = [
         environ.get("QUICK_VALIDATE_PATH"),
+        str(Path(__file__).resolve().parent / "quick_validate_skill.py"),
         str(Path.home() / ".codex" / "skills" / ".system" / "skill-creator" / "scripts" / "quick_validate.py"),
     ]
 

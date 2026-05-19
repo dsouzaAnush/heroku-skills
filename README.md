@@ -229,6 +229,7 @@ python3 scripts/validate_repo.py
 ```
 
 This validates each skill with the local `quick_validate.py` helper, executes bundled helper scripts in safe default mode, verifies that the Codex, Claude, and Cursor source adapters mirror the portable root skills, and builds the generated adapters into `dist/codex/heroku`, `dist/claude/heroku`, and `dist/cursor/heroku`.
+CI uses the repo-local `scripts/quick_validate_skill.py` fallback so validation does not depend on Codex system skills being installed on the runner.
 
 ## Tests
 
