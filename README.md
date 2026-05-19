@@ -12,6 +12,68 @@ This repository is organized as an agent-neutral `skills/` collection first. The
 
 Pair these skills with [Heroku Code MCP](https://github.com/dsouzaAnush/heroku-code-mcp) when Claude needs a live Heroku API tool surface in addition to workflow guidance.
 
+## Install
+
+For most users, install the packaged [Heroku Plugin](https://github.com/dsouzaAnush/heroku-plugin). It vendors this skills tree and includes platform-specific manifests for Claude Code, Codex, and Cursor.
+
+### Claude Code
+
+```bash
+claude plugin marketplace add dsouzaAnush/heroku-plugin
+claude plugin install heroku@heroku-plugin
+claude plugin enable heroku@heroku-plugin
+```
+
+For a source-built Claude adapter:
+
+```bash
+git clone https://github.com/dsouzaAnush/heroku-skills.git
+cd heroku-skills
+python3 scripts/build_claude_adapter.py
+claude plugin validate dist/claude/heroku
+claude --plugin-dir "$(pwd)/dist/claude/heroku"
+```
+
+### Codex
+
+```bash
+codex plugin marketplace add dsouzaAnush/heroku-plugin --ref main
+```
+
+Enable `heroku-plugin@heroku-plugin` in the Codex Plugins tab, or add this to `~/.codex/config.toml`:
+
+```toml
+[plugins."heroku-plugin@heroku-plugin"]
+enabled = true
+```
+
+For a source-built Codex adapter:
+
+```bash
+git clone https://github.com/dsouzaAnush/heroku-skills.git
+cd heroku-skills
+python3 scripts/build_codex_adapter.py
+```
+
+The generated Codex bundle is `dist/codex/heroku`.
+
+### Cursor
+
+```bash
+git clone https://github.com/dsouzaAnush/heroku-plugin.git
+cursor agent --plugin-dir "$(pwd)/heroku-plugin"
+```
+
+For a source-built Cursor adapter:
+
+```bash
+git clone https://github.com/dsouzaAnush/heroku-skills.git
+cd heroku-skills
+python3 scripts/build_cursor_adapter.py
+```
+
+The generated Cursor bundle is `dist/cursor/heroku`. It includes `.cursor/rules/heroku-skills.mdc`, `mcp.json`, and a plugin-local `skills/` mirror.
+
 ## Included skills
 
 - `deploy-to-heroku`
@@ -257,7 +319,26 @@ The generated bundle is written to:
 dist/cursor/heroku
 ```
 
-To use it in Cursor, copy or symlink `dist/cursor/heroku/.cursor/rules/heroku-skills.mdc` into the target project. Keep the generated `skills/` directory available beside it when you want Cursor to consult the detailed Heroku workflows.
+To use it in Cursor, copy or symlink `dist/cursor/heroku/.cursor/rules/heroku-skills.mdc` into the target project. Keep the generated `skills/` directory available beside it when you want Cursor to consult the detailed Heroku workflows, and copy `dist/cursor/heroku/mcp.json` into `~/.cursor/mcp.json` or project-local `.cursor/mcp.json` when `heroku-code-mcp` should expose live tools.
+
+## Publish
+
+This repo is the canonical portable skill source. Publishable artifacts are:
+
+- GitHub source: `https://github.com/dsouzaAnush/heroku-skills`
+- Claude adapter: `dist/claude/heroku`
+- Codex adapter: `dist/codex/heroku`
+- Cursor adapter: `dist/cursor/heroku`
+- Packaged cross-agent plugin: `https://github.com/dsouzaAnush/heroku-plugin`
+
+Before publishing or syncing into `heroku-plugin`:
+
+```bash
+python3 -m pip install -r requirements-dev.txt
+python3 scripts/validate_repo.py
+python3 -m pytest -q
+python3 scripts/evaluate_skills.py --json
+```
 
 ## Sources and conventions
 
