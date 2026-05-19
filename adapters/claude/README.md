@@ -1,4 +1,4 @@
-# Claude adapter
+# Code Plugin Adapter
 
 This directory contains Claude Code packaging inputs for the portable Heroku skills repo.
 

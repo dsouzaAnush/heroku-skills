@@ -1,22 +1,20 @@
 <p align="center">
   <img src="assets/heroku-logo-dark-rgb.svg" alt="Heroku" height="44" />
-  <span>&nbsp;&nbsp;&nbsp;</span>
-  <img src="assets/claude-ai-logo.svg" alt="Claude" height="44" />
 </p>
 
 # Heroku Skills
 
 Portable Heroku-focused skills for AI agents.
 
-This repository is organized as an agent-neutral `skills/` collection first. The core skills avoid platform-specific assumptions so they can be packaged for Codex, Claude, Cursor, or other agents that understand reusable rules and skill-style workflows. Agent-specific packaging lives under `adapters/`.
+This repository is organized as an agent-neutral `skills/` collection first. The core skills avoid platform-specific assumptions so they can be packaged for Codex, Claude Code, Cursor, or other agents that understand reusable rules and skill-style workflows. Agent-specific packaging lives under `adapters/`.
 
-Pair these skills with [Heroku Code MCP](https://github.com/dsouzaAnush/heroku-code-mcp) when Claude needs a live Heroku API tool surface in addition to workflow guidance.
+Pair these skills with [Heroku Code MCP](https://github.com/dsouzaAnush/heroku-code-mcp) when an agent needs a live Heroku API tool surface in addition to workflow guidance.
 
 ## Install
 
 For most users, install the packaged [Heroku Plugin](https://github.com/dsouzaAnush/heroku-plugin). It vendors this skills tree and includes platform-specific manifests for Claude Code, Codex, and Cursor.
 
-### Claude Code
+### <img src="https://claude.com/favicon.ico" alt="Claude Code" height="22" /> Claude Code
 
 ```bash
 claude plugin marketplace add dsouzaAnush/heroku-plugin
@@ -31,10 +29,10 @@ git clone https://github.com/dsouzaAnush/heroku-skills.git
 cd heroku-skills
 python3 scripts/build_claude_adapter.py
 claude plugin validate dist/claude/heroku
-claude --plugin-dir "$(pwd)/dist/claude/heroku"
+claude --plugin-dir dist/claude/heroku
 ```
 
-### Codex
+### <img src="https://upload.wikimedia.org/wikipedia/commons/9/97/OpenAI_logo_2025.svg" alt="OpenAI Codex" height="22" /> Codex
 
 ```bash
 codex plugin marketplace add dsouzaAnush/heroku-plugin --ref main
@@ -57,11 +55,11 @@ python3 scripts/build_codex_adapter.py
 
 The generated Codex bundle is `dist/codex/heroku`.
 
-### Cursor
+### <img src="https://cursor.com/favicon.ico" alt="Cursor" height="22" /> Cursor
 
 ```bash
 git clone https://github.com/dsouzaAnush/heroku-plugin.git
-cursor agent --plugin-dir "$(pwd)/heroku-plugin"
+cursor agent --plugin-dir heroku-plugin
 ```
 
 For a source-built Cursor adapter:
@@ -95,7 +93,7 @@ Each skill keeps its `SKILL.md` concise and moves longer command catalogs and sa
 
 ## Brand assets
 
-This repo vendors the official Heroku logo assets from Heroku's January 2025 logo kit, plus the Claude logo used in the Claude-facing docs, and keeps them in two places:
+This repo vendors the official Heroku logo assets from Heroku's January 2025 logo kit and keeps them in two places:
 
 - repo-level copies under [`assets`](assets)
 - per-skill copies under each skill's `assets/` directory so client UIs can render icons directly from an individual skill folder
@@ -132,11 +130,11 @@ The canonical Claude source plugin lives at `adapters/claude/heroku/.claude-plug
 
 The canonical Cursor source bundle lives at `adapters/cursor/heroku/.cursor/rules/heroku-skills.mdc`. It includes an agent-requested Cursor Project Rule plus the same plugin-local `skills/` mirror so Cursor can load the rule and then consult the detailed Heroku skill references on demand.
 
-## Claude integration
+## MCP Integration
 
-The Claude integration has three layers:
+The Claude Code setup has three layers:
 
-| Layer | Repository | What Claude gets |
+| Layer | Repository | What the client gets |
 | --- | --- | --- |
 | Heroku Code MCP | [`heroku-code-mcp`](https://github.com/dsouzaAnush/heroku-code-mcp) | Three live tools: `auth_status`, `search`, and `execute` |
 | Heroku Skills | this repo | Safe Heroku workflows for deploys, app ops, config vars, Postgres, domains, add-ons, AppLink, Connect, Slack agents, and Managed Inference |
@@ -144,7 +142,7 @@ The Claude integration has three layers:
 
 Claude Code MCP setup follows Anthropic's [Claude Code MCP documentation](https://docs.anthropic.com/en/docs/claude-code/mcp).
 
-### Claude Code
+### <img src="https://claude.com/favicon.ico" alt="Claude Code" height="22" /> Claude Code
 
 Build and validate the plugin:
 
@@ -166,7 +164,7 @@ PORT=3333 HOST=127.0.0.1 npm run dev
 Load the plugin for a Claude Code session:
 
 ```bash
-claude --plugin-dir "$(pwd)/dist/claude/heroku"
+claude --plugin-dir dist/claude/heroku
 ```
 
 Claude Code should show:
@@ -176,7 +174,7 @@ Claude Code should show:
 - MCP server `plugin:heroku:heroku-code-mcp`
 - MCP tools `auth_status`, `search`, and `execute`
 
-### Claude Desktop
+### <img src="https://claude.com/favicon.ico" alt="Claude Desktop" height="22" /> Claude Desktop
 
 Claude Desktop can use the MCP server directly for live Heroku API access. Add this to `~/Library/Application Support/Claude/claude_desktop_config.json` when HTTP MCP is supported:
 
@@ -209,12 +207,12 @@ If your Claude Desktop build expects stdio servers, bridge to the local HTTP end
 
 Restart Claude Desktop after changing the config. The classic Desktop chat surface uses MCP tools; the skills and plugin packaging are for Claude Code-style coding sessions.
 
-### Claude cowork / remote code sessions
+### Remote code sessions
 
 Use the Claude Code plugin path for cowork when the cowork runtime can load local plugins:
 
 ```bash
-claude --plugin-dir /path/to/heroku-skills/dist/claude/heroku
+claude --plugin-dir dist/claude/heroku
 ```
 
 For remote cowork sessions, run `heroku-code-mcp` where the cowork runtime can reach it, then update `adapters/claude/heroku/.mcp.json` or the generated `dist/claude/heroku/.mcp.json` to point at that endpoint. Keep token stores and seeded Heroku credentials private to the runtime; do not expose the local development token store on a public network.
@@ -283,7 +281,7 @@ The generated bundle is written to:
 dist/codex/heroku
 ```
 
-## Build the Claude adapter
+## Build the Code Plugin Adapter
 
 Create a self-contained Claude Code plugin bundle:
 

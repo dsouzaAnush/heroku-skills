@@ -1,16 +1,14 @@
-# Heroku Claude Source Plugin
+# Heroku Source Plugin
 
 This is the canonical Claude Code source plugin for the portable Heroku skills repo.
 
 <p align="center">
   <img src="assets/heroku-logo-dark-rgb.svg" alt="Heroku" height="40" />
-  <span>&nbsp;&nbsp;&nbsp;</span>
-  <img src="assets/claude-ai-logo.svg" alt="Claude" height="40" />
 </p>
 
 - `.claude-plugin/plugin.json` contains the Claude plugin manifest.
 - `.mcp.json` points Claude Code at a local `heroku-code-mcp` HTTP server.
-- `assets/` contains plugin-local Heroku and Claude brand assets.
+- `assets/` contains plugin-local Heroku brand assets.
 - `skills/` contains the plugin-local mirror of the portable root skill set.
 
 Refresh the plugin-local skill mirror and build a distributable bundle with:
@@ -31,7 +29,7 @@ PORT=3333 HOST=127.0.0.1 npm run dev
 Load this plugin in Claude Code:
 
 ```bash
-claude --plugin-dir /path/to/heroku-skills/dist/claude/heroku
+claude --plugin-dir dist/claude/heroku
 ```
 
 Expected Claude Code init surface:

@@ -3,7 +3,7 @@
 This is the canonical Cursor source bundle for the portable Heroku skills repo.
 
 - `.cursor/rules/heroku-skills.mdc` contains the Cursor Project Rule.
-- `assets/` contains bundle-local Heroku and Claude brand assets.
+- `assets/` contains bundle-local Heroku brand assets.
 - `skills/` contains the bundle-local mirror of the portable root skill set.
 
 Refresh the bundle-local skill mirror and build a distributable bundle with:
