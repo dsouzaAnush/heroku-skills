@@ -321,7 +321,13 @@ dist/cursor/heroku
 
 To use it in Cursor, copy or symlink `dist/cursor/heroku/.cursor/rules/heroku-skills.mdc` into the target project. Keep the generated `skills/` directory available beside it when you want Cursor to consult the detailed Heroku workflows, and copy `dist/cursor/heroku/mcp.json` into `~/.cursor/mcp.json` or project-local `.cursor/mcp.json` when `heroku-code-mcp` should expose live tools.
 
-## Publish
+## CI/CD and Publish
+
+This repo uses free GitHub Actions for public repositories:
+
+- `validate.yml` runs tests, structure validation, adapter validation, and usefulness evals on PRs and pushes to `main`.
+- `release.yml` runs on `v*` tags, builds Claude, Codex, and Cursor adapters, packages zip artifacts, and creates or updates the GitHub Release.
+- Dependabot checks Python and GitHub Actions dependencies weekly.
 
 This repo is the canonical portable skill source. Publishable artifacts are:
 
@@ -339,6 +345,15 @@ python3 scripts/validate_repo.py
 python3 -m pytest -q
 python3 scripts/evaluate_skills.py --json
 ```
+
+Release a new skills/adapters package:
+
+```bash
+git tag v0.2.1
+git push origin v0.2.1
+```
+
+The release workflow publishes downloadable adapter zips for Claude Code, Codex, and Cursor. The companion `heroku-plugin` repo remains the easiest install path for most users.
 
 ## Sources and conventions
 

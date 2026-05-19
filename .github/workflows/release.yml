@@ -1,0 +1,104 @@
+name: Release
+
+on:
+  push:
+    tags:
+      - "v*"
+  workflow_dispatch:
+    inputs:
+      version:
+        description: "Skills release version, without the leading v."
+        required: true
+        type: string
+
+permissions:
+  contents: write
+
+concurrency:
+  group: release-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    if: github.repository == 'dsouzaAnush/heroku-skills'
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Resolve release version
+        run: |
+          set -euo pipefail
+          if [[ "${GITHUB_REF_TYPE}" == "tag" ]]; then
+            RELEASE_TAG="${GITHUB_REF_NAME}"
+            VERSION="${RELEASE_TAG#v}"
+          else
+            VERSION="${{ github.event.inputs.version }}"
+            RELEASE_TAG="v${VERSION}"
+          fi
+
+          if [[ -z "${VERSION}" ]]; then
+            echo "::error::Release version is required."
+            exit 1
+          fi
+
+          echo "VERSION=${VERSION}" >> "${GITHUB_ENV}"
+          echo "RELEASE_TAG=${RELEASE_TAG}" >> "${GITHUB_ENV}"
+
+      - name: Install validation dependencies
+        run: python -m pip install -r requirements-dev.txt
+
+      - name: Run tests
+        run: python -m pytest -q
+
+      - name: Validate repository
+        run: python scripts/validate_repo.py
+
+      - name: Run skill usefulness eval
+        run: python scripts/evaluate_skills.py --json
+
+      - name: Build adapters
+        run: |
+          python scripts/build_claude_adapter.py
+          python scripts/build_codex_adapter.py
+          python scripts/build_cursor_adapter.py
+
+      - name: Package release assets
+        run: |
+          set -euo pipefail
+          mkdir -p dist
+          git archive --format=zip --prefix="heroku-skills-${VERSION}/" HEAD -o "dist/heroku-skills-source-${VERSION}.zip"
+          (cd dist/claude && python -m zipfile -c "../heroku-skills-claude-${VERSION}.zip" heroku)
+          (cd dist/codex && python -m zipfile -c "../heroku-skills-codex-${VERSION}.zip" heroku)
+          (cd dist/cursor && python -m zipfile -c "../heroku-skills-cursor-${VERSION}.zip" heroku)
+
+      - name: Create or update GitHub release
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          set -euo pipefail
+          RELEASE_NOTES="Heroku Skills ${VERSION}
+
+          Assets:
+          - heroku-skills-source-${VERSION}.zip: portable source skills
+          - heroku-skills-claude-${VERSION}.zip: Claude Code adapter
+          - heroku-skills-codex-${VERSION}.zip: Codex plugin adapter
+          - heroku-skills-cursor-${VERSION}.zip: Cursor rules adapter"
+
+          if gh release view "${RELEASE_TAG}" >/dev/null 2>&1; then
+            gh release edit "${RELEASE_TAG}" --title "Heroku Skills ${VERSION}" --notes "${RELEASE_NOTES}"
+          else
+            gh release create "${RELEASE_TAG}" --title "Heroku Skills ${VERSION}" --notes "${RELEASE_NOTES}"
+          fi
+
+          gh release upload "${RELEASE_TAG}" \
+            "dist/heroku-skills-source-${VERSION}.zip" \
+            "dist/heroku-skills-claude-${VERSION}.zip" \
+            "dist/heroku-skills-codex-${VERSION}.zip" \
+            "dist/heroku-skills-cursor-${VERSION}.zip" \
+            --clobber
